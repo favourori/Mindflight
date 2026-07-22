@@ -17,6 +17,7 @@ FROM alpine:3.19
 RUN apk add --no-cache ca-certificates
 WORKDIR /app
 COPY --from=backend-builder /out/mindflight /app/mindflight
+COPY --from=frontend-builder /app/frontend/dist /app/frontend/dist
 ENV PORT=8080
 EXPOSE 8080
 CMD ["/app/mindflight"]

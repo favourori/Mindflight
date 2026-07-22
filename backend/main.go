@@ -506,7 +506,17 @@ func main() {
 		writeJSON(w, http.StatusOK, insight)
 	})
 
-	staticRoot := filepath.Join(".", "frontend", "dist")
+	staticRoot := os.Getenv("STATIC_ROOT")
+	if staticRoot == "" {
+		staticRoot = filepath.Join(".", "frontend", "dist")
+		if _, err := os.Stat(staticRoot); err != nil {
+			fallbackRoot := filepath.Join("/app", "frontend", "dist")
+			if _, fallbackErr := os.Stat(fallbackRoot); fallbackErr == nil {
+				staticRoot = fallbackRoot
+			}
+		}
+	}
+
 	staticFS := http.FileServer(http.Dir(staticRoot))
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		if strings.HasPrefix(r.URL.Path, "/api/") || r.URL.Path == "/healthz" {
