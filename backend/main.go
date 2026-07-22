@@ -539,8 +539,13 @@ func main() {
 		port = "8080"
 	}
 
-	log.Printf("MindFlight API listening on http://127.0.0.1:%s", port)
-	log.Fatal(http.ListenAndServe(":"+port, cors(mux)))
+	bindAddress := os.Getenv("HOST")
+	if bindAddress == "" {
+		bindAddress = "0.0.0.0"
+	}
+
+	log.Printf("MindFlight API listening on http://%s:%s", bindAddress, port)
+	log.Fatal(http.ListenAndServe(bindAddress+":"+port, cors(mux)))
 }
 
 func authenticateUser(db *sql.DB, username, password string) (authUser, error) {
